@@ -20,6 +20,14 @@ countries = sorted(df['location'].dropna().unique())
 country = st.selectbox("Select Country", countries)
 
 filtered_df = df[df['location'] == country]
+latest = filtered_df.dropna(subset=["total_cases"]).iloc[-1]
+
+col1, col2, col3 = st.columns(3)
+
+col1.metric("Total Cases", f"{int(latest['total_cases']):,}")
+col2.metric("Total Deaths", f"{int(latest['total_deaths']):,}")
+col3.metric("New Cases (Latest)", f"{int(latest['new_cases']):,}")
+
 
 fig = px.line(
     filtered_df,
@@ -29,3 +37,11 @@ fig = px.line(
 )
 
 st.plotly_chart(fig, width="stretch")
+fig2 = px.line(
+    filtered_df,
+    x="date",
+    y="new_cases",
+    title=f"Daily New COVID-19 Cases in {country}"
+)
+
+st.plotly_chart(fig2, width="stretch")
